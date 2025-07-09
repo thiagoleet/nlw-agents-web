@@ -1,8 +1,20 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { CreateRoomPage } from "./pages/create-room";
+import { RoomPage } from "./pages/room";
+
 export function App() {
   return (
-    <div className="App">
-      <h1>Welcome to the React App</h1>
-      <p>This is a simple React application.</p>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          element={<CreateRoomPage />}
+          index
+        />
+        <Route
+          element={<RoomPage />}
+          path="/room"
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
