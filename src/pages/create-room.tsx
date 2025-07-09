@@ -23,18 +23,19 @@ export function CreateRoomPage() {
 
       {isLoading && <div>Loading...</div>}
 
-      <ul>
+      <div className="flex flex-col gap-1">
         {data?.map((room) => {
-          return <li key={room.id}>{room.name}</li>;
+          return (
+            <Link
+              className="text-blue-500 hover:underline"
+              key={room.id}
+              to={`/room/${room.id}`}
+            >
+              {room.name}
+            </Link>
+          );
         })}
-      </ul>
-
-      <Link
-        className="text-blue-500 hover:underline"
-        to="/room"
-      >
-        Go to Room
-      </Link>
+      </div>
     </div>
   );
 }
