@@ -1,0 +1,70 @@
+import { useQuery } from "@tanstack/react-query";
+import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { dayjs } from "@/lib/dayjs";
+
+type GetRoomsApiResponse = Array<{
+  id: string;
+  name: string;
+  questionsCount: number;
+  createdAt: string;
+}>;
+
+export function RoomList() {
+  const { data, isLoading } = useQuery({
+    queryKey: ["get-rooms"],
+    queryFn: async () => {
+      const response = await fetch("http://localhost:3333/rooms");
+      const result: GetRoomsApiResponse = await response.json();
+
+      return result;
+    },
+  });
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Salas recentes</CardTitle>
+        <CardDescription>
+          Acesso rápido para as salas criadas recentemente
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">
+        {isLoading && (
+          <div className="text-muted-foreground text-sm">Carregando...</div>
+        )}
+
+        {data?.map((room) => (
+          <Link
+            className="flex items-center justify-between rounded-lg border p-3 hover:bg-accent/50"
+            key={room.id}
+            to={`/room/${room.id}`}
+          >
+            <div className="flex flex-1 flex-col gap-1">
+              <h3 className="font-medium">{room.name}</h3>
+              <div className="flex items-center gap-2 text-xs">
+                <Badge variant="secondary">
+                  {room.questionsCount} pergunta(s)
+                </Badge>
+                <Badge variant="secondary">
+                  {dayjs(new Date(room.createdAt)).toNow()}
+                </Badge>
+              </div>
+            </div>
+            <span className="flex items-center gap-1 text-sm">
+              Entrar
+              <ArrowRight className="size-3" />
+            </span>
+          </Link>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
