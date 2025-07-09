@@ -12,7 +12,7 @@ export function AppRoutes() {
         />
         <Route
           element={<RoomPage />}
-          path="/room"
+          path="/room/:roomId"
         />
       </Routes>
     </BrowserRouter>
