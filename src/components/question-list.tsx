@@ -16,7 +16,13 @@ export function QuestionList({ roomId }: QuestionListProps) {
         </h2>
       </div>
 
-      {data?.map((question) => {
+      {data?.items.length === 0 && (
+        <div className="text-muted-foreground text-sm">
+          Nenhuma pergunta encontrada
+        </div>
+      )}
+
+      {data?.items.map((question) => {
         return (
           <QuestionItem
             key={`question:${question.id}`}
