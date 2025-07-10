@@ -29,7 +29,7 @@ export function RecordRoomAudioPage() {
       }
     );
 
-    const result = await response.json();
+    await response.json();
   }
 
   function createRecorder(audio: MediaStream) {
@@ -44,9 +44,15 @@ export function RecordRoomAudioPage() {
       }
     };
 
-    recorderRef.current.onstart = () => {};
+    recorderRef.current.onstart = () => {
+      // biome-ignore lint/suspicious/noConsole: Just to indicate recording start
+      console.log("Gravação iniciada");
+    };
 
-    recorderRef.current.onstop = () => {};
+    recorderRef.current.onstop = () => {
+      // biome-ignore lint/suspicious/noConsole: Just to indicate recording stop
+      console.log("Gravação parada");
+    };
 
     recorderRef.current.start();
   }
