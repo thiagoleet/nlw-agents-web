@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const isRecordingSupported =
@@ -14,6 +14,7 @@ type RecordRoomAudioPageParams = {
 export function RecordRoomAudioPage() {
   const [isRecording, setIsRecording] = useState(false);
   const recorderRef = useRef<MediaRecorder | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const params = useParams<RecordRoomAudioPageParams>();
 
   async function updloadAudio(blob: Blob) {
@@ -31,11 +32,35 @@ export function RecordRoomAudioPage() {
     const result = await response.json();
   }
 
+  function createRecorder(audio: MediaStream) {
+    recorderRef.current = new MediaRecorder(audio, {
+      mimeType: "audio/webm",
+      audioBitsPerSecond: 64_000,
+    });
+
+    recorderRef.current.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        updloadAudio(event.data);
+      }
+    };
+
+    recorderRef.current.onstart = () => {};
+
+    recorderRef.current.onstop = () => {};
+
+    recorderRef.current.start();
+  }
+
   function stopRecording() {
     setIsRecording(false);
 
     if (recorderRef.current && recorderRef.current.state !== "inactive") {
       recorderRef.current.stop();
+    }
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
   }
 
@@ -55,27 +80,13 @@ export function RecordRoomAudioPage() {
       },
     });
 
-    recorderRef.current = new MediaRecorder(audio, {
-      mimeType: "audio/webm",
-      audioBitsPerSecond: 64_000,
-    });
+    createRecorder(audio);
 
-    recorderRef.current.ondataavailable = (event) => {
-      if (event.data.size > 0) {
-        console.log("Gravação concluída:", event.data);
-        updloadAudio(event.data);
-      }
-    };
+    intervalRef.current = setInterval(() => {
+      recorderRef.current?.stop();
 
-    recorderRef.current.onstart = () => {
-      console.log("Gravação iniciada");
-    };
-
-    recorderRef.current.onstop = () => {
-      console.log("Gravação parada");
-    };
-
-    recorderRef.current.start();
+      createRecorder(audio);
+    }, 5000);
   }
 
   if (!params.roomId) {
