@@ -6,7 +6,31 @@ interface QuestionListProps {
 }
 
 export function QuestionList({ roomId }: QuestionListProps) {
-  const { data } = useRoomQuestions(roomId);
+  const { data, isLoading, error } = useRoomQuestions(roomId);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <p className="text-gray-500">Carregando perguntas...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <p className="text-red-500">Erro ao carregar perguntas</p>
+      </div>
+    );
+  }
+
+  if (!Array.isArray(data)) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <p className="text-gray-500">Nenhuma pergunta encontrada</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -16,13 +40,7 @@ export function QuestionList({ roomId }: QuestionListProps) {
         </h2>
       </div>
 
-      {data?.items.length === 0 && (
-        <div className="text-muted-foreground text-sm">
-          Nenhuma pergunta encontrada
-        </div>
-      )}
-
-      {data?.items.map((question) => {
+      {data.map((question) => {
         return (
           <QuestionItem
             key={`question:${question.id}`}

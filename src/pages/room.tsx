@@ -4,12 +4,12 @@ import { QuestionForm } from "@/components/question-form";
 import { QuestionList } from "@/components/question-list";
 import { Button } from "@/components/ui/button";
 
-type RoomParams = {
+type RoomPageParams = {
   roomId: string;
 };
 
 export function RoomPage() {
-  const params = useParams<RoomParams>();
+  const params = useParams<RoomPageParams>();
 
   if (!params.roomId) {
     return (
